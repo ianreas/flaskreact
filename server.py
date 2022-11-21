@@ -7,10 +7,9 @@ import matplotlib
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
-import mpld3
 import numpy as np
 import yfinance as yf
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, jsonify
 from matplotlib import cm
 from flask_cors import CORS, cross_origin
 from flask.helpers import send_from_directory
