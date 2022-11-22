@@ -17,6 +17,7 @@ from flask.helpers import send_from_directory
 app = Flask(__name__, static_folder='client/build', static_url_path='')
 cors=CORS(app)
 #app.config['CORS_HEADERS'] = "Content-Type"
+#web: gunicorn --bind 0.0.0.0:$PORT server:app
 
 #@cross_origin
 @app.route("/acceptStockTicker", methods=['POST', 'GET'])
