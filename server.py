@@ -926,8 +926,9 @@ def getOptionsPriceMatrix():
         for price in possiblePrices:
             rowWithDifferentDatesSamePrices = []
             for date in dates:
-                rounded = truncate((CRRBinomial('P', 'a', 'C', price, optionStrike, date[1]/365, 0.05, 0, optionVolatility, 100)), decimals=2)
-                rowWithDifferentDatesSamePrices.append(rounded)
+                if price and optionStrike and date[1]/365 and optionVolatility:
+                    rounded = truncate((CRRBinomial('P', 'a', 'C', price, optionStrike, date[1]/365, 0.05, 0, optionVolatility, 100)), decimals=2)
+                    rowWithDifferentDatesSamePrices.append(rounded)
             optionMatrixDatesByPrices.append(rowWithDifferentDatesSamePrices)
     else: 
         for price in possiblePrices:
