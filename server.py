@@ -18,7 +18,6 @@ insiderTradingApi = InsiderTradingApi("860b7c1c0047049ae6f787034217d581a563fb763
 
 import json
 
-import finnhub
 
 from yahoofinancials import YahooFinancials
 
