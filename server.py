@@ -472,7 +472,7 @@ def getSectorPerformance():
 
     driver.get(url)
 
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(20)
 
     soup = BeautifulSoup(driver.page_source, "html.parser")
     sector_performance_div = soup.find("ul", {"class": "sector-performance-list"})
