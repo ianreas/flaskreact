@@ -25,6 +25,8 @@ import pandas as pd
 
 import re
 
+import os
+
 #import datetime
 
 from waitress import serve
@@ -464,8 +466,18 @@ def getInsiderTrading():
 @cross_origin()
 def getSectorPerformance():
     options = Options()
+
+    # You will need to specify the binary location for Heroku 
+    options.binary_location = os.getenv('GOOGLE_CHROME_BIN')
+
+    options.add_argument("--headless")
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    driver = webdriver.Chrome(executable_path=os.getenv('CHROME_EXECUTABLE_PATH'), options=options)
+
+
     options.headless = True  # Set headless mode to True to hide the browser window
-    driver = webdriver.Chrome(options=options)
+    #driver = webdriver.Chrome(options=options)
 
     url = "https://www.quiverquant.com/"
     #response = requests.get(url)
