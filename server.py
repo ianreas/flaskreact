@@ -27,6 +27,10 @@ import re
 
 import os
 
+import psycopg2
+
+
+
 #import datetime
 
 from waitress import serve
@@ -714,7 +718,7 @@ def CRRBinomial(OutputFlag, AmeEurFlag, CallPutFlag, S, X, T, r, c, v, n):
 
 
 
-    # S is the share price at time t
+    # S is the share price at time t = 0 = today = price of option
 
     # X is the strike price
 
@@ -939,14 +943,14 @@ def getOptionsPriceMatrix():
             rowWithDifferentDatesSamePrices = []
             for date in dates:
                 if price and optionStrike and date[1]/365 and optionVolatility:
-                    rounded = truncate((CRRBinomial('P', 'a', 'C', price, optionStrike, date[1]/365, 0.05, 0, optionVolatility, 100)), decimals=2)
+                    rounded = truncate((CRRBinomial('P', 'a', 'C', price, optionStrike, date[1]/365, 0.05, 0.05, optionVolatility, 100)), decimals=2)
                     rowWithDifferentDatesSamePrices.append(rounded)
             optionMatrixDatesByPrices.append(rowWithDifferentDatesSamePrices)
     else: 
         for price in possiblePrices:
             rowWithDifferentDatesSamePrices = []
             for date in dates:
-                rounded = truncate((CRRBinomial('P', 'a', 'P', price, optionStrike, date[1]/365, 0.05, 0, optionVolatility, 100)), decimals=2)
+                rounded = truncate((CRRBinomial('P', 'a', 'P', price, optionStrike, date[1]/365, 0.05, 0.05, optionVolatility, 100)), decimals=2)
                 rowWithDifferentDatesSamePrices.append(rounded)
             optionMatrixDatesByPrices.append(rowWithDifferentDatesSamePrices)
     
@@ -954,6 +958,43 @@ def getOptionsPriceMatrix():
     return [optionMatrixDatesByPrices, dates, possiblePrices]
 
 
+
+@app.route('/getInsiderTradersFromDB', methods=['POST', 'GET'])
+@cross_origin()
+def getInsiderTradersFromDB():
+    # Database connection details
+    host = 'database-1.cnsms1pducc9.us-east-2.rds.amazonaws.com'
+    port = '5432'
+    database = 'postgres'
+    user = 'postgres'
+    password = 'muhammedik10'
+
+    # Establish a connection to the RDS database
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=database,
+        user=user,
+        password=password
+    )
+
+    # Create a cursor to execute SQL queries
+    cursor = conn.cursor()
+
+    # Execute a query to retrieve the data
+    query = "SELECT * FROM your_table"
+    cursor.execute(query)
+
+    # Fetch the data and convert it to JSON
+    data = cursor.fetchall()
+    json_data = json.dumps(data)
+
+    # Close the cursor and database connection
+    cursor.close()
+    conn.close()
+
+    # Print the data as JSON
+    return json_data
 
     
 

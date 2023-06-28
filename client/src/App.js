@@ -1,12 +1,16 @@
-import React, {useState, useEffect} from 'react'
-import Form from './components/Form'
+import React from 'react'
+import Navbar from './components/Navbar'
+import './styles/globals.css'
+import { Route, Switch } from 'react-router-dom'
+import Home from './pages/Home'
+import About from './pages/About'
+import Contact from './pages/Contact'
+import Spy from './pages/Spy'
+import NewSpy from './pages/NewSpy'
 
 
 
-function App() {
-  const [ticker, setTicker] = useState("")
-  const [data, setData] = useState([{}])
-
+export default function App() {
   /*
   //this shit will receive data from flask so it can be displayed on react
   useEffect(() => {
@@ -64,41 +68,20 @@ onSubmit={async () => {
     //setTicker(ticker)
   //}
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!ticker) return
-
-    async function fetchData() { const response = await fetch(`/acceptStockTicker?ticker=${ticker}`)
-    const data = await response.json()
-    setData(data)
-  }
-  fetchData()
- } 
-
+  
 
   return (
     <div>
-      <div>
-            <form onSubmit={handleSubmit}>
-            <label htmlFor="title" className="form-label">Ticker</label>
-            <input 
-            type="text"
-            className="form-control" 
-            placeholder ="Enter stock ticker"
-            value={ticker}
-            onChange={(e)=>setTicker(e.target.value)}
-            required
-            />
-            <input type='submit' value='Submit'/>
-            </form>
-
-        </div>
-
-    <div dangerouslySetInnerHTML={{__html: data.data}}>
-      
-    </div>
+      <Navbar />
+      <div className='container'>
+        <Switch>
+          <Route path='/' ><Home /></Route>
+          <Route path='/contact'><Contact /></Route>
+          <Route path='/about'><About /></Route>
+          <Route path='/Spy'> <Spy/></Route>
+          <Route path='/NewSpy'><NewSpy /></Route>
+        </Switch>
+      </div>
     </div>
   )
 }
-
-export default App
