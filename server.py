@@ -982,7 +982,7 @@ def getInsiderTradersFromDB():
     cursor = conn.cursor()
 
     # Execute a query to retrieve the data
-    query = "SELECT * FROM your_table"
+    query = "SELECT * FROM insider_trading"
     cursor.execute(query)
 
     # Fetch the data and convert it to JSON
