@@ -30,7 +30,6 @@ import os
 import psycopg2
 
 
-
 #import datetime
 
 from waitress import serve
@@ -50,23 +49,40 @@ from plotly.graph_objs import *
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from scipy import interpolate
+from helperFunctions import meow
+import logging
 
-
-
+# this actually worked whats below
 app = Flask(__name__, static_folder='client/build', static_url_path='')
 cors=CORS(app)
+#logging.basicConfig(level=logging.DEBUG)
+
+
+# was commented
 #app.config['CORS_HEADERS'] = "Content-Type"
 #web: gunicorn --bind 0.0.0.0:$PORT server:app
 
+@app.route("/meow", methods=['POST', 'GET'])
+@cross_origin()
+def meow():
+    return "meow"
+
+#whats below works
 @app.route('/getNewThreeDGraph', methods=['POST', 'GET'])
 @cross_origin()
 def threeD():
     pickedticker = request.args.get("ticker")
+    print(f"Received ticker: '{pickedticker}'")
     stock = yf.Ticker(pickedticker)
+    #print(stock.ticker)
+    #print(dir(stock))
+    #print(stock.option_chain)
     # store maturities
     lMaturity = list(stock.options)
 
-    #print(lMaturity)
+
+
+    print("maturity", lMaturity)
 
 
 
@@ -112,8 +128,10 @@ def threeD():
 
     mydata = {'Strikes': lStrike, 'Days until Expiration': lDTE_extended, 'Implied Volatility': lImpVol}
     #mydata = {lStrike, lDTE_extended, lImpVol}
-
+    #print(mydata)
     df = pd.DataFrame(mydata)
+
+
 
     #print(df)
 
@@ -126,14 +144,24 @@ def threeD():
     column3 = df['Implied Volatility'].values
 
     pivot_table = df.pivot_table(values='Implied Volatility', index='Days until Expiration', columns='Strikes')
+    #Empty DataFrame
+    #Columns: []
+    #Index: []
+    #print(pivot_table)
 
     surface_data = pivot_table.values.tolist()
+
+    #[]
+    #print(surface_data)
 
     surface_json = json.dumps(surface_data)
 
     surface_array = np.array(surface_data)
 
     nan_mask = np.isnan(surface_array)
+
+    # prints []
+    #print(surface_array)
 
     x_coords = np.arange(surface_array.shape[1])
     y_coords = np.arange(surface_array.shape[0])
@@ -996,20 +1024,8 @@ def getInsiderTradersFromDB():
     # Print the data as JSON
     return json_data
 
-    
-
-
-
-    
-
-
-
- 
-
-
-
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=8000, debug=True)
     #serve(app, host='0.0.0.0', port=5000)
