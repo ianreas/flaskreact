@@ -44,7 +44,7 @@ python-dateutil==2.9.0.post0
 pytz==2024.1
 requests==2.32.3
 s3transfer==0.6.2
-scipy==1.9.1
+scipy==1.14.1
 sec-api==1.0.16
 selenium==4.9.0
 six==1.16.0
