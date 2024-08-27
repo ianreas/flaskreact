@@ -81,7 +81,6 @@ def threeD():
     lMaturity = list(stock.options)
 
 
-
     print("maturity", lMaturity)
 
 
@@ -122,6 +121,8 @@ def threeD():
     lStrike = list(chain(*lStrike))        #x
     lDTE_extended = list(chain(*lDTE_extended))     #y
     lImpVol = list(chain(*lImpVol))  #z
+
+    print(lStrike)
 
     #np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 

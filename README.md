@@ -3,6 +3,12 @@
 buildingalphaconda
 ```
 
+# use 
+```sh
+conda activate buildingalphaconda
+```
+
+
 # to start this server do 
 ```sh
 python server.py
