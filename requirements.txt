@@ -40,6 +40,7 @@ psycopg2==2.9.6
 psycopg2-binary==2.9.9
 pyparsing==3.1.2
 PySocks==1.7.1
+plotly-express==0.4.1
 python-dateutil==2.9.0.post0
 pytz==2024.1
 requests==2.32.3
