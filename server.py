@@ -206,6 +206,145 @@ def threeD():
 
     return surface_json
 
+
+@app.route('/getNewThreeDGraphForPuts', methods=['POST', 'GET'])
+@cross_origin()
+def threeD():
+    pickedticker = request.args.get("ticker")
+    print(f"Received ticker: '{pickedticker}'")
+    stock = yf.Ticker(pickedticker)
+    #print(stock.ticker)
+    #print(dir(stock))
+    #print(stock.option_chain)
+    # store maturities
+    lMaturity = list(stock.options)
+
+
+    print("maturity", lMaturity)
+
+
+
+    today = datetime.now().date()
+    # empty list for days to expiration
+    lDTE = []
+    # empty list to store data for calls
+    lData_calls = []
+
+    # loop over maturities
+    for maturity in lMaturity:
+        # maturity date
+        maturity_date = datetime.strptime(maturity, '%Y-%m-%d').date()
+        # DTE: difference between maturity date and today
+        lDTE.append((maturity_date - today).days)
+        # store call data
+        lData_calls.append(stock.option_chain(maturity).puts)
+
+    # print(lData_calls)
+
+    # create empty lists to contain unlisted data
+    lStrike = []
+    lDTE_extended = []
+    lImpVol = []
+    for i in range(0, len(lData_calls)):
+    # append strikes to list
+        lStrike.append(lData_calls[i]["strike"])
+        # repeat DTE so the list has same length as the other lists
+        lDTE_extended.append(np.repeat(lDTE[i], len(lData_calls[i])))
+        # append implied volatilities to list
+        lImpVol.append(lData_calls[i]["impliedVolatility"])
+
+    # print(lImpVol)
+    # print(lStrike)
+
+    # unlist list of lists
+    lStrike = list(chain(*lStrike))        #x
+    lDTE_extended = list(chain(*lDTE_extended))     #y
+    lImpVol = list(chain(*lImpVol))  #z
+
+    print(lStrike)
+
+    #np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
+
+
+    mydata = {'Strikes': lStrike, 'Days until Expiration': lDTE_extended, 'Implied Volatility': lImpVol}
+    #mydata = {lStrike, lDTE_extended, lImpVol}
+    #print(mydata)
+    df = pd.DataFrame(mydata)
+
+
+
+    #print(df)
+
+
+
+    column1 = df['Strikes'].values
+
+    column2 = df["Days until Expiration"].values
+
+    column3 = df['Implied Volatility'].values
+
+    pivot_table = df.pivot_table(values='Implied Volatility', index='Days until Expiration', columns='Strikes')
+    #Empty DataFrame
+    #Columns: []
+    #Index: []
+    #print(pivot_table)
+
+    surface_data = pivot_table.values.tolist()
+
+    #[]
+    #print(surface_data)
+
+    surface_json = json.dumps(surface_data)
+
+    surface_array = np.array(surface_data)
+
+    nan_mask = np.isnan(surface_array)
+
+    # prints []
+    #print(surface_array)
+
+    x_coords = np.arange(surface_array.shape[1])
+    y_coords = np.arange(surface_array.shape[0])
+
+    # Create a meshgrid of coordinate arrays
+    x_mesh, y_mesh = np.meshgrid(x_coords, y_coords)
+
+    # Flatten the coordinates and values
+    x_flat = x_mesh[~nan_mask]
+    y_flat = y_mesh[~nan_mask]
+    z_flat = surface_array[~nan_mask]
+
+    # Perform linear interpolation
+    interp = interpolate.LinearNDInterpolator((x_flat, y_flat), z_flat)
+    z_interp = interp(x_mesh, y_mesh)
+
+    surface_array[nan_mask] = z_interp[nan_mask]
+
+    default_value = 0.0  # Replace with the desired default value
+    surface_array[np.isnan(surface_array)] = default_value
+
+
+
+    # Convert the modified numpy array back to a list
+    surface_modified = surface_array.tolist()
+
+    # Convert the modified surface_data to JSON
+    surface_json = json.dumps(surface_modified)
+
+
+
+    #two_dim_array = np.column_stack((column1, column2, column3))
+
+    # Reshape the 2D array into nested arrays
+    #nested_array = two_dim_array.tolist()
+
+    #json_data = json.dumps([nested_array])
+
+    # Convert the nested array to JSON
+    #json_data = json.dumps(nested_array)
+
+    return surface_json
+
 #@cross_origin
 @app.route("/acceptStockTicker", methods=['POST', 'GET'])
 @cross_origin()
